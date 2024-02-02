@@ -12,24 +12,23 @@ const config = {
 
 const pool = new Pool(config)
 
-const readPosts = async () => {
-  try {
-    const result = await pool.query("SELECT * FROM posts;")
-    return result.rows
-  } catch (error) {
-    console.log(error)
-    return { code: 500, error }
-  }
-}
-const createPost = async (id, titulo, url, descripcion) => {
-  try {
-    const consulta = "INSERT INTO posts (id, titulo, img, descripcion) VALUES ($1, $2, $3, $4) RETURNING *;"
-    const result = await pool.query(consulta, [id, titulo, url, descripcion])
-    return result.rows
-  } catch (error) {
-    console.log(error)
-    return { code: 500, error }
-  }
-}
+const genericQuery = (query, values) => pool
+  .query(query, values)
+  .then(({rows}) => rows)
+  .catch(({code, message}) => ({code, message}))
 
-module.exports = { readPosts, createPost}
+const createPost = async (id, titulo, url, descripcion) => {
+  const query = "INSERT INTO posts (id, titulo, img, descripcion) VALUES ($1, $2, $3, $4) RETURNING *;"
+  return await genericQuery(query, [id, titulo, url, descripcion])
+}
+const readPosts = async () => await genericQuery("SELECT * FROM posts;")
+//PARTE 2
+const updatePost = async (id) => await genericQuery("UPDATE posts SET likes = COALESCE(likes, 0) + 1 WHERE id = $1 RETURNING *;", [id])
+const deletePost = async (id) => await genericQuery("DELETE FROM posts WHERE id = $1 RETURNING *;", [id])
+
+module.exports = {
+  readPosts,
+  createPost,
+  updatePost,
+  deletePost
+}

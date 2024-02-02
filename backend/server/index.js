@@ -17,7 +17,6 @@ app.get('/posts', async (_, res) => {
 	}
 	return res.status(200).json(result)
 })
-
 app.post('/posts', async (req, res) => {
 	const {id, titulo, url, descripcion} = req.body
 	if(!id || !titulo || !url || !descripcion) {
@@ -46,9 +45,7 @@ app.delete('/posts/:id', async (req, res) => {
 	}
 	return res.status(200).json(result)
 })
-
 app.all('*', (_, res) => res.status(404).json({ code: 404, message: 'Recurso no encontrado' }))
-
 app.listen(PORT, () => console.log('http://localhost:' + PORT))
 
 module.exports = app

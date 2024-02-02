@@ -11,7 +11,7 @@ app.use(express.json())
 app.use(cors())
 
 app.get('/posts', async (_, res) => {
-	const result = await readPosts()
+    const result = await readPosts()
 	if(result.code === 500) {
 		return res.status(500).json(result)
 	}
@@ -46,6 +46,7 @@ app.delete('/posts/:id', async (req, res) => {
 	return res.status(200).json(result)
 })
 app.all('*', (_, res) => res.status(404).json({ code: 404, message: 'Recurso no encontrado' }))
+
 app.listen(PORT, () => console.log('http://localhost:' + PORT))
 
 module.exports = app
